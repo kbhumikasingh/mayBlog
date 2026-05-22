@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Story — mayBlog</title>
+<!-- Theme applied before paint: no flash -->
+<script>
+  (function(){ document.documentElement.setAttribute("data-theme", localStorage.getItem("mbTheme")||"dark"); })();
+</script>
+<link rel="stylesheet" href="css/theme.css">
+<link rel="stylesheet" href="css/create.css">
+<link rel="icon" href="data:,">
+</head>
+<body>
+
+<header class="navbar">
+  <h2 class="logo">may<span>Blog</span></h2>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="blogs.html">Blogs</a>
+    <a href="admin.html">Admin</a>
+    <a href="about.html">About</a>
+    <button class="theme-btn">☀️ Light</button>
+  </div>
+</header>
+
+<section class="creator-wrap">
+
+  <div class="stats-grid">
+    <div class="stat-card"><h3 id="totalPosts">0</h3><p>Total Posts</p></div>
+    <div class="stat-card"><h3 id="draftCount">0</h3><p>Drafts Saved</p></div>
+    <div class="stat-card"><h3 id="wordCount">0</h3><p>Words</p></div>
+  </div>
+
+  <div class="dashboard-grid">
+
+    <!-- EDITOR -->
+    <div class="editor-panel">
+      <h1 id="formHeading">Create New Story</h1>
+
+      <input type="text"   id="postTitle"    placeholder="Enter Blog Title">
+      <input type="text"   id="postDesc"     placeholder="Subtitle / Description">
+
+      <select id="postCategory">
+        <option value="">Select Category</option>
+        <option>Lifestyle</option><option>Travel</option><option>Food</option>
+        <option>Books</option><option>Wellness</option><option>Mind</option>
+      </select>
+
+      <textarea id="postContent" placeholder="Write your story here..."></textarea>
+      <input type="text" id="tagsInput" placeholder="#travel #food #books">
+
+      <small id="saveStatus">Not Saved</small>
+
+      <div class="editor-actions">
+        <button type="button" onclick="saveDraft()"  class="draft-btn">Save Draft</button>
+        <button type="button" onclick="submitPost()" class="publish-btn" id="publishBtn">Publish</button>
+      </div>
+    </div>
+
+    <!-- SIDE -->
+    <div class="side-panel">
+
+      <!-- AI TOOLS -->
+      <div class="widget-box ai-box">
+        <h3><span>⚡</span> AI Tools</h3>
+        <button type="button" class="mini-btn" id="readBtn">   <span class="btn-icon">⏱</span> Reading Time</button>
+        <button type="button" class="mini-btn" id="titleBtn">  <span class="btn-icon">✍️</span> AI Title</button>
+        <button type="button" class="mini-btn" id="summaryBtn"><span class="btn-icon">📝</span> AI Summary</button>
+        <button type="button" class="mini-btn" id="tagsBtn">   <span class="btn-icon">🏷</span> AI Tags</button>
+        <button type="button" class="mini-btn" id="previewBtn"><span class="btn-icon">👁</span> Preview Story</button>
+        <small id="aiResult"></small>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="toast"></div>
+
+<script src="js/theme.js"></script>
+<script type="module" src="js/create.js"></script>
+</body>
+</html>

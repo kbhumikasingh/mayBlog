@@ -1,0 +1,66 @@
+/* ═══════════════════════════════════════════════
+   mayBlog — shared theme variables
+   Applied via [data-theme="dark"] / [data-theme="light"]
+   on <html>. Both create.css and admin.css import this.
+═══════════════════════════════════════════════ */
+
+/* ── DARK (default) ── */
+:root,
+[data-theme="dark"] {
+  --bg:         #050505;
+  --surface:    #101010;
+  --surface2:   #171717;
+  --surface3:   #1c1c1c;
+  --nav-bg:     rgba(5,5,5,.94);
+  --border:     rgba(255,255,255,.06);
+  --border2:    rgba(255,255,255,.12);
+  --gold:       #d4af37;
+  --gold-dim:   #a8882a;
+  --gold-faint: rgba(212,175,55,.08);
+  --gold-border:rgba(212,175,55,.2);
+  --text:       #ffffff;
+  --text2:      rgba(255,255,255,.7);
+  --muted:      rgba(255,255,255,.45);
+  --muted2:     rgba(255,255,255,.25);
+  --input-bg:   #171717;
+  --card-bg:    #101010;
+  --row-bg:     #161616;
+  --red:        #e05555;
+  --green:      #4caf7d;
+  --theme-icon: "☀️";
+  --select-opt: #1a1a1a;
+}
+
+/* ── LIGHT ── */
+[data-theme="light"] {
+  --bg:         #f4f1eb;
+  --surface:    #ffffff;
+  --surface2:   #f7f4ee;
+  --surface3:   #ede9e0;
+  --nav-bg:     rgba(244,241,235,.96);
+  --border:     rgba(0,0,0,.08);
+  --border2:    rgba(0,0,0,.14);
+  --gold:       #a8862a;
+  --gold-dim:   #7d6420;
+  --gold-faint: rgba(168,134,42,.07);
+  --gold-border:rgba(168,134,42,.25);
+  --text:       #1a1612;
+  --text2:      rgba(26,22,18,.75);
+  --muted:      rgba(26,22,18,.5);
+  --muted2:     rgba(26,22,18,.3);
+  --input-bg:   #f0ece3;
+  --card-bg:    #ffffff;
+  --row-bg:     #faf8f4;
+  --red:        #c0392b;
+  --green:      #27ae60;
+  --select-opt: #ffffff;
+}
+
+/* ── Smooth transition on every element ── */
+*, *::before, *::after {
+  transition:
+    background-color .25s ease,
+    border-color     .25s ease,
+    color            .2s  ease;
+}
+/* But NOT layout/transform/opacity transitions (those break animations) */

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — mayBlog</title>
+<script>
+  (function(){ document.documentElement.setAttribute("data-theme", localStorage.getItem("mbTheme")||"dark"); })();
+</script>
+<link rel="stylesheet" href="css/theme.css">
+<link rel="stylesheet" href="css/admin.css">
+<link rel="icon" href="data:,">
+</head>
+<body>
+
+<header class="navbar">
+  <h2 class="logo">may<span>Blog</span> <span class="admin-label">Admin</span></h2>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="blogs.html">Blogs</a>
+    <a href="create.html" class="new-post-btn">＋ New Post</a>
+    <button class="theme-btn">☀️ Light</button>
+  </div>
+</header>
+
+<!-- VIEW MODAL -->
+<div id="viewModal">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeView()">✕</button>
+    <div class="modal-cat"  id="mCat"></div>
+    <h2 class="modal-title" id="mTitle"></h2>
+    <p  class="modal-desc"  id="mDesc"></p>
+    <hr class="modal-hr">
+    <div class="modal-body" id="mBody"></div>
+    <div class="modal-tags" id="mTags"></div>
+    <div class="modal-meta" id="mMeta"></div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM -->
+<div id="deleteModal">
+  <div class="confirm-card">
+    <h3>Delete Post?</h3>
+    <p>This is permanent and cannot be undone.</p>
+    <div class="confirm-actions">
+      <button class="btn-cancel"      onclick="closeDelete()">Cancel</button>
+      <button class="btn-confirm-del" onclick="confirmDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<section class="admin-wrap">
+
+  <!-- STATS -->
+  <div class="stats-grid">
+    <div class="stat-card"><h3 id="statTotal">—</h3><p>Total Posts</p></div>
+    <div class="stat-card"><h3 id="statToday">—</h3><p>Published Today</p></div>
+    <div class="stat-card"><h3 id="statDrafts">—</h3><p>Drafts</p></div>
+    <div class="stat-card"><h3 id="statPinned">—</h3><p>Pinned</p></div>
+  </div>
+
+  <!-- ACTION BAR -->
+  <div class="action-bar">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchBox" placeholder="Search by title, tag, category…" oninput="filterRows()">
+    </div>
+    <select id="filterCategory" onchange="filterRows()">
+      <option value="all">All Categories</option>
+      <option>Lifestyle</option><option>Travel</option><option>Food</option>
+      <option>Books</option><option>Wellness</option><option>Mind</option>
+    </select>
+    <button class="refresh-btn" onclick="loadPosts()">↻ Refresh</button>
+  </div>
+
+  <!-- POSTS -->
+  <div class="posts-box">
+    <h2>Manage Posts</h2>
+    <div id="postsContainer"></div>
+  </div>
+
+</section>
+
+<div id="toast"></div>
+
+<script src="js/theme.js"></script>
+<script type="module">
+import { db, collection, getDocs, deleteDoc, updateDoc, doc }
+  from "./js/firebase.js";
+
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+const auth = getAuth();
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    window.location.href = "index.html";
+  }
+});
+
+let allPosts = [];
+let pendingDeleteId = null;
+
+// ── TOAST ─────────────────────────────────────────
+function toast(msg, type="ok") {
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.className = type === "error" ? "error" : "";
+  t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 3000);
+}
+
+// ── LOAD ──────────────────────────────────────────
+window.loadPosts = async function() {
+  showSkeletons();
+  try {
+    const snap = await getDocs(collection(db, "posts"));
+    allPosts = snap.docs.map(d => ({ id:d.id, ...d.data() }));
+    allPosts.sort((a,b) => (b.pinned?1:0)-(a.pinned?1:0) || b.createdAt-a.createdAt);
+    updateStats(); renderRows(allPosts);
+  } catch(e) {
+    document.getElementById("postsContainer").innerHTML =
+      `<div class="empty-state"><div class="big">⚠️</div><p>Could not load — check Firestore rules.</p></div>`;
+  }
+};
+
+function showSkeletons() {
+  document.getElementById("postsContainer").innerHTML =
+    Array(4).fill(0).map(() =>
+      `<div class="post-row" style="display:block;padding:20px;">
+        <div class="skeleton" style="height:18px;width:60%;margin-bottom:10px;"></div>
+        <div class="skeleton" style="height:13px;width:85%;"></div>
+      </div>`).join("");
+}
+
+// ── STATS ─────────────────────────────────────────
+function updateStats() {
+  const today = new Date().toDateString();
+  document.getElementById("statTotal").textContent  = allPosts.length;
+  document.getElementById("statToday").textContent  = allPosts.filter(p => new Date(p.createdAt).toDateString()===today).length;
+  document.getElementById("statDrafts").textContent = allPosts.filter(p => p.status==="draft").length;
+  document.getElementById("statPinned").textContent = allPosts.filter(p => p.pinned).length;
+}
+
+// ── RENDER ────────────────────────────────────────
+function renderRows(posts) {
+  const c = document.getElementById("postsContainer");
+  if (!posts.length) {
+    c.innerHTML = `<div class="empty-state"><div class="big">✍️</div><p>No posts found.</p></div>`; return;
+  }
+  c.innerHTML = posts.map((p, i) => {
+    const statusBadge = p.status==="draft"
+      ? `<span class="badge draft-badge">Draft</span>`
+      : `<span class="badge live-badge">Live</span>`;
+    const pinnedBadge = p.pinned ? `<span class="badge pin-badge">📌 Pinned</span>` : "";
+    const date = p.createdAt ? new Date(p.createdAt).toLocaleDateString("en-US",{year:"numeric",month:"short",day:"numeric"}) : "—";
+    return `
+    <div class="post-row ${p.pinned?"pinned-row":""}" data-title="${esc(p.title)}" data-cat="${esc(p.category)}" data-tags="${esc(p.tags)}" style="animation-delay:${i*.04}s">
+      <div>
+        <h4>${esc(p.title||"Untitled")} ${pinnedBadge}</h4>
+        <p>${esc(p.desc||"")}</p>
+        ${statusBadge}
+      </div>
+      <div><p>${esc(p.category||"General")}</p></div>
+      <div><p>${date}</p></div>
+      <div class="post-actions">
+        <button class="view-btn"   onclick="viewPost('${p.id}')">👁 View</button>
+        <button class="edit-btn"   onclick="editPost('${p.id}')">✏️ Edit</button>
+        <button class="pin-btn"    onclick="togglePin('${p.id}',${!!p.pinned})">${p.pinned?"Unpin":"📌 Pin"}</button>
+        <button class="toggle-btn" onclick="toggleStatus('${p.id}','${p.status||"published"}')">${p.status==="draft"?"🟢 Publish":"⬇️ Draft"}</button>
+        <button class="delete-btn" onclick="askDelete('${p.id}')">🗑 Delete</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+// ── FILTER ────────────────────────────────────────
+window.filterRows = function() {
+  const q   = document.getElementById("searchBox").value.toLowerCase();
+  const cat = document.getElementById("filterCategory").value;
+  const filtered = allPosts.filter(p => {
+    const blob = (p.title+p.desc+p.tags+p.content+p.category).toLowerCase();
+    return (!q || blob.includes(q)) && (cat==="all" || p.category===cat);
+  });
+  renderRows(filtered);
+};
+
+// ── VIEW MODAL ────────────────────────────────────
+window.viewPost = function(id) {
+  const p = allPosts.find(x => x.id===id); if (!p) return;
+  document.getElementById("mCat").textContent   = p.category || "Uncategorized";
+  document.getElementById("mTitle").textContent = p.title    || "Untitled";
+  document.getElementById("mDesc").textContent  = p.desc     || "";
+  document.getElementById("mBody").textContent  = p.content  || "";
+  document.getElementById("mTags").innerHTML    = (p.tags||"").split(/\s+/).filter(Boolean).map(t=>`<span>${esc(t)}</span>`).join("");
+  const mins = Math.ceil((p.content||"").split(/\s+/).filter(Boolean).length/200);
+  document.getElementById("mMeta").innerHTML    =
+    `<span>📅 ${p.createdAt ? new Date(p.createdAt).toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"}) : "—"}</span>
+     <span>⏱ ~${mins} min read</span>
+     <span>${p.status==="draft"?"📋 Draft":"✅ Live"}</span>`;
+  document.getElementById("viewModal").classList.add("open");
+  document.body.style.overflow = "hidden";
+};
+window.closeView = function() {
+  document.getElementById("viewModal").classList.remove("open");
+  document.body.style.overflow = "";
+};
+document.getElementById("viewModal").addEventListener("click", e => {
+  if (e.target === document.getElementById("viewModal")) closeView();
+});
+
+// ── EDIT ──────────────────────────────────────────
+window.editPost = id => { window.location.href = "create.html?edit=" + id; };
+
+// ── PIN / STATUS ──────────────────────────────────
+window.togglePin = async (id, isPinned) => {
+  await updateDoc(doc(db,"posts",id), { pinned: !isPinned });
+  toast(isPinned ? "Post unpinned" : "Post pinned 📌");
+  loadPosts();
+};
+window.toggleStatus = async (id, status) => {
+  const next = status === "draft" ? "published" : "draft";
+  await updateDoc(doc(db,"posts",id), { status: next });
+  toast(next === "published" ? "Post is now live 🟢" : "Moved to draft");
+  loadPosts();
+};
+
+// ── DELETE ────────────────────────────────────────
+window.askDelete = id => {
+  pendingDeleteId = id;
+  document.getElementById("deleteModal").classList.add("open");
+};
+window.closeDelete = () => {
+  pendingDeleteId = null;
+  document.getElementById("deleteModal").classList.remove("open");
+};
+window.confirmDelete = async () => {
+  if (!pendingDeleteId) return;
+  try {
+    await deleteDoc(doc(db,"posts",pendingDeleteId));
+    allPosts = allPosts.filter(p => p.id !== pendingDeleteId);
+    pendingDeleteId = null;
+    document.getElementById("deleteModal").classList.remove("open");
+    updateStats(); filterRows();
+    toast("Post deleted.");
+  } catch { toast("Delete failed.", "error"); }
+};
+
+function esc(s) {
+  return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+loadPosts();
+</script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact - MayBlog</title>
+
+<link rel="stylesheet" href="css/common.css">
+<link rel="stylesheet" href="css/contact.css">
+<link rel="icon" href="data:,">
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<header class="navbar">
+  <h2 class="logo">mayBlog</h2>
+
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="contact.html" class="active">Contact</a>
+    <a href="#" onclick="openAuth()">Create</a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="contact-hero">
+
+<div class="contact-left">
+
+<small>GET IN TOUCH</small>
+
+<h1>Let's Build <span>Something Meaningful</span></h1>
+
+<p>
+Whether you have feedback, ideas, collaboration plans,
+or simply want to say hello —
+I'd love to hear from you.
+</p>
+
+<div class="contact-info">
+<p>📩 kkb*******@gmail.com</p>
+<p>📍 India</p>
+<p>⏰ Replies within 24 hours</p>
+</div>
+
+</div>
+
+<div class="contact-right">
+
+<form class="contact-form" onsubmit="sendMessage(event)">
+
+  <input type="text"  id="fromName"  placeholder="Your Name"    required>
+  <input type="email" id="fromEmail" placeholder="Your Email"   required>
+  <input type="text"  id="subject"   placeholder="Subject">
+  <textarea id="message" placeholder="Write your message..." rows="7"></textarea>
+
+  <button type="submit" id="sendBtn">Send Message</button>
+
+</form>
+
+</div>
+
+</section>
+
+<!-- SOCIAL -->
+<section class="social-strip">
+
+<a href="https://instagram.com/mayblog_along" target="_blank">Instagram</a>
+<a href="#">Twitter</a>
+<a href="#">LinkedIn</a>
+<a href="#">GitHub</a>
+
+</section>
+
+<!-- QUOTE -->
+<section class="contact-quote">
+<h2>"Every great connection starts with one message."</h2>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+
+<div class="footer-grid">
+
+<div>
+<h3>mayBlog</h3>
+<p>A place where thoughts become stories.</p>
+</div>
+
+<div>
+<h4>NAVIGATE</h4>
+<a href="index.html">Home</a>
+<a href="about.html">About</a>
+<a href="contact.html">Contact</a>
+</div>
+
+<div>
+<h4>CONNECT</h4>
+<a href="https://instagram.com/mayblog_along" target="_blank">Instagram</a>
+<a href="#">Twitter</a>
+</div>
+
+</div>
+
+<div class="footer-bottom">
+© 2026 mayBlog. All rights reserved.
+</div>
+
+</footer>
+
+<div id="authModal" class="auth-modal">
+
+<div class="auth-box">
+<span class="close-btn" onclick="closeAuth()">&times;</span>
+
+<h2>Welcome Back</h2>
+<p>Login or create account to start writing.</p>
+
+<input type="email" placeholder="Email">
+<input type="password" placeholder="Password">
+
+<button onclick="location.href='create.html'">Continue</button>
+</div>
+
+</div>
+
+<script>
+function openAuth(){
+  window.location.href = "index.html";
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+  emailjs.init("q9weJiW8Y9yuDiCn8");
+
+  function sendMessage(e) {
+    e.preventDefault();
+    const btn = document.getElementById("sendBtn");
+    btn.textContent = "Sending...";
+    btn.disabled = true;
+
+    emailjs.send("service_1f3n1a7", "template_rdfqf8h", {
+      from_name:  document.getElementById("fromName").value,
+      from_email: document.getElementById("fromEmail").value,
+      subject:    document.getElementById("subject").value,
+      message:    document.getElementById("message").value
+    })
+    .then(() => {
+      btn.textContent = "Sent ✓";
+      e.target.reset();
+    })
+    .catch(() => {
+      btn.textContent = "Failed. Try again.";
+      btn.disabled = false;
+    });
+  }
+</script>
+</body>
+</html>

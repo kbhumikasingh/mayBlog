@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blogs - mayBlog</title>
+<link rel="stylesheet" href="css/blogs.css">
+<link rel="icon" href="data:,">
+</head>
+<body>
+
+<header class="navbar">
+<h2>mayBlog</h2>
+<div class="nav-links">
+<a href="index.html">Home</a>
+<a href="blogs.html">Blogs</a>
+<a href="about.html">About</a>
+<a href="contact.html">Contact</a>
+</div>
+</header>
+
+<section class="hero">
+<h1>Stories Worth Reading</h1>
+<p>Featured editorials + community writing</p>
+</section>
+
+<section class="posts-grid">
+
+<!-- ORIGINAL POSTS -->
+<a href="slowliving.html" class="card">
+<h3>The Art of Slow Living</h3>
+<p>Finding peace in a world obsessed with speed.</p>
+<span>Lifestyle</span>
+</a>
+
+<a href="mountains.html" class="card">
+<h3>Golden Hour in the Mountains</h3>
+<p>The quiet beauty of sunrise and sunset among peaks.</p>
+<span>Travel</span>
+</a>
+
+<a href="adhd.html" class="card">
+<h3>Understanding ADHD</h3>
+<p>Replacing self-blame with understanding.</p>
+<span>Mind</span>
+</a>
+
+<a href="riverpiedra.html" class="card">
+<h3>By the River Piedra</h3>
+<p>An emotional and reflective book review.</p>
+<span>Books</span>
+</a>
+
+<a href="food.html" class="card">
+<h3>Farm to Table Cooking</h3>
+<p>Fresh ingredients and mindful meals.</p>
+<span>Food</span>
+</a>
+
+</section>
+
+<!-- ── TICKER FILTER BAR ── -->
+<section class="filter-bar">
+  <div class="filter-track">
+    <!-- set 1 -->
+    <button class="active" onclick="filterPosts('all')">ALL</button>
+    <button onclick="filterPosts('Lifestyle')">LIFESTYLE</button>
+    <button onclick="filterPosts('Travel')">TRAVEL</button>
+    <button onclick="filterPosts('Culture')">CULTURE</button>
+    <button onclick="filterPosts('Wellness')">WELLNESS</button>
+    <button onclick="filterPosts('Food')">FOOD</button>
+    <button onclick="filterPosts('City Life')">CITY LIFE</button>
+    <button onclick="filterPosts('Mind')">MIND</button>
+    <button onclick="filterPosts('Books')">BOOKS</button>
+    <!-- set 2 — exact duplicate for seamless loop -->
+    <button class="active" onclick="filterPosts('all')">ALL</button>
+    <button onclick="filterPosts('Lifestyle')">LIFESTYLE</button>
+    <button onclick="filterPosts('Travel')">TRAVEL</button>
+    <button onclick="filterPosts('Culture')">CULTURE</button>
+    <button onclick="filterPosts('Wellness')">WELLNESS</button>
+    <button onclick="filterPosts('Food')">FOOD</button>
+    <button onclick="filterPosts('City Life')">CITY LIFE</button>
+    <button onclick="filterPosts('Mind')">MIND</button>
+    <button onclick="filterPosts('Books')">BOOKS</button>
+  </div>
+</section>
+
+
+<section class="posts-grid" id="postsContainer"></section>
+
+<script type="module">
+import { db } from "./js/firebase.js";
+import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+ 
+const box = document.getElementById("postsContainer");
+box.innerHTML = "<p style='opacity:0.4;text-align:center;grid-column:1/-1;'>Loading...</p>";
+ 
+const snap = await getDocs(collection(db, "posts"));
+const posts = [];
+snap.forEach(item => posts.push({ id: item.id, ...item.data() }));
+ 
+const visible = posts
+  .filter(p => p.status !== "draft")
+  .sort((a,b) => (b.pinned?1:0)-(a.pinned?1:0) || (b.createdAt||0)-(a.createdAt||0));
+ 
+box.innerHTML = "";
+ 
+if (visible.length === 0) {
+  box.innerHTML = "<p style='opacity:0.5;text-align:center;grid-column:1/-1;margin-top:20px;'>No posts yet.</p>";
+} else {
+  visible.forEach(p => {
+    const pin = p.pinned ? "<span style='color:#d4af37;font-size:12px;'>📌 Pinned &nbsp;</span>" : "";
+    box.innerHTML += "<a href='reader.html?id=" + p.id + "' class='card'>"
+      + "<h3>" + (p.title || "Untitled") + "</h3>"
+      + "<p>" + (p.desc || "") + "</p>"
+      + "<span>" + pin + (p.category || "General") + "</span>"
+      + "</a>";
+  });
+}
+ 
+window.filterPosts = function(cat) {
+  document.querySelectorAll(".filter-track button").forEach(b => b.classList.remove("active"));
+  event.target.classList.add("active");
+  document.querySelectorAll("#postsContainer .card").forEach(card => {
+    const cardCat = card.querySelector("span")?.textContent?.trim().toLowerCase() || "";
+    card.style.display = (cat === "all" || cardCat.includes(cat.toLowerCase())) ? "block" : "none";
+  });
+};
+</script>
+
+<footer class="footer">
+
+<div class="footer-grid">
+
+<div>
+<h3>mayBlog</h3>
+<p>A place where thoughts become stories.</p>
+</div>
+
+<div>
+<h4>Navigate</h4>
+<a href="index.html">Home</a>
+<a href="blogs.html">Blogs</a>
+<a href="about.html">About</a>
+</div>
+
+<div>
+<h4>Connect</h4>
+<a href="#">Instagram</a>
+<a href="#">Twitter</a>
+</div>
+
+</div>
+
+<div class="footer-bottom">
+© 2026 mayBlog. All rights reserved.
+</div>
+
+</footer>
+</body>
+</html>

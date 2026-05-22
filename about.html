@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About - MayBlog</title>
+
+<link rel="stylesheet" href="css/common.css">
+<link rel="stylesheet" href="css/about.css">
+<link rel="icon" href="data:,">
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<header class="navbar">
+  <h2 class="logo">mayBlog</h2>
+
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="about.html" class="active">About</a>
+    <a href="contact.html">Contact</a>
+    <a href="#" onclick="openAuth()">Create</a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="about-hero">
+
+  <div class="about-image">
+    <img src="https://i.pinimg.com/736x/78/9e/c5/789ec5a814ae5e74feb604de4d23d41f.jpg">
+  </div>
+
+  <div class="about-content">
+
+    <small>ABOUT THE CREATOR</small>
+
+    <h1>Where Thoughts <span>Become Stories</span></h1>
+
+    <p>
+      Hi, Developer of this website this side —
+      reader, builder, partial writer and perpetual wanderer.
+      mayBlog was created as a space where ideas breathe,
+      words matter, and stories live longer.
+    </p>
+
+    <p>
+      This project was built using HTML, CSS, JavaScript, Node.JS and Firebase along AI integration
+      to learn modern web development while creating something meaningful.
+    </p>
+
+    <p>
+      The vision is simple:
+      give people a beautiful place to write honestly,
+      read deeply, and express freely.
+    </p>
+
+    <a href="create.html" class="about-btn">Start Writing</a>
+
+  </div>
+
+</section>
+
+<!-- VALUES -->
+<section class="values">
+
+<div class="value-box">
+<h3>✍ Write Freely</h3>
+<p>Turn passing thoughts into timeless words.</p>
+</div>
+
+<div class="value-box">
+<h3>📖 Read Deeply</h3>
+<p>Discover stories that stay with you long after reading.</p>
+</div>
+
+<div class="value-box">
+<h3>🌍 Open To All</h3>
+<p>A platform where every voice deserves space.</p>
+</div>
+
+</section>
+
+<!-- QUOTE -->
+<section class="about-quote">
+<h2>"Some journeys begin with a single sentence."</h2>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+
+<div class="footer-grid">
+
+<div>
+<h3>mayBlog</h3>
+<p>Thoughtful stories about living with intention.</p>
+</div>
+
+<div>
+<h4>NAVIGATE</h4>
+<a href="index.html">Home</a>
+<a href="about.html">About</a>
+<a href="contact.html">Contact</a>
+</div>
+
+<div>
+<h4>CONNECT</h4>
+<a href="https://instagram.com/mayblog_along" target="_blank">Instagram</a>
+<a href="#">Twitter</a>
+</div>
+
+</div>
+
+<div class="footer-bottom">
+© 2026 mayBlog. All rights reserved.
+</div>
+
+</footer>
+
+<div id="authModal" class="auth-modal">
+
+<div class="auth-box">
+<span class="close-btn" onclick="closeAuth()">&times;</span>
+
+<h2>Welcome Back</h2>
+<p>Login or create account to start writing.</p>
+
+<input type="email" placeholder="Email">
+<input type="password" placeholder="Password">
+
+<button onclick="location.href='create.html'">Continue</button>
+</div>
+
+</div>
+
+<script>
+function openAuth(){
+  window.location.href = "index.html";
+}
+</script>
+</body>
+</html>

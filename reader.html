@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reading... — mayBlog</title>
+
+<link rel="stylesheet" href="css/common.css">
+<link rel="icon" href="data:,">
+<style>
+.reader-wrap {
+  max-width: 780px;
+  margin: 60px auto;
+  padding: 0 30px 80px;
+}
+
+.post-category {
+  font-size: 12px;
+  letter-spacing: 2px;
+  opacity: 0.5;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+
+.post-title {
+  font-size: 48px;
+  font-weight: 900;
+  line-height: 1.15;
+  margin-bottom: 18px;
+}
+
+.post-desc {
+  font-size: 20px;
+  opacity: 0.65;
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+
+.post-meta {
+  display: flex;
+  gap: 20px;
+  font-size: 13px;
+  opacity: 0.45;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  margin-bottom: 40px;
+}
+
+.post-body {
+  font-size: 18px;
+  line-height: 1.9;
+  opacity: 0.88;
+  white-space: pre-wrap;
+}
+
+.post-tags {
+  margin-top: 48px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.post-tags span {
+  background: rgba(255,255,255,0.07);
+  border-radius: 30px;
+  padding: 6px 14px;
+  font-size: 13px;
+  color: #d4af37;
+  font-weight: 600;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 36px;
+  font-size: 13px;
+  opacity: 0.5;
+  color: inherit;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+.back-link:hover { 
+    color:#d4af37;
+    opacity: 1; }
+
+/* loading / error states */
+.state-box {
+  text-align: center;
+  padding: 100px 20px;
+  opacity: 0.5;
+}
+.state-box h2 { font-size: 28px; margin-bottom: 12px; }
+.state-box p  { font-size: 15px; }
+
+/* footer tweaks */
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 30px;
+}
+.footer-grid h3 { font-size: 20px; margin-bottom: 10px; }
+.footer-grid h4 { margin-bottom: 14px; opacity: 0.6; letter-spacing: 1px; font-size: 12px; }
+.footer-grid a  { display: block; margin-bottom: 8px; color: inherit; text-decoration: none; opacity: 0.7; }
+.footer-grid a:hover { color:#d4af37; opacity: 1; }
+.footer-bottom { border-top: 1px solid rgba(255,255,255,.1); padding-top: 20px; font-size: 13px; opacity: 0.4; }
+
+@media (max-width: 700px) {
+  .post-title { font-size: 30px; }
+  .post-desc  { font-size: 16px; }
+  .post-body  { font-size: 16px; }
+  .footer-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<header class="navbar">
+  <h2 class="logo">mayBlog</h2>
+  <nav class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="blogs.html">Blogs</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+</header>
+
+<!-- POST CONTENT -->
+<main class="reader-wrap" id="readerWrap">
+  <div class="state-box" id="loadingState">
+    <h2>Loading post…</h2>
+    <p>Fetching from Firestore, one moment.</p>
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <h3>mayBlog</h3>
+      <p>A place where thoughts become stories.</p>
+    </div>
+    <div>
+      <h4>Navigate</h4>
+      <a href="index.html">Home</a>
+      <a href="blogs.html">Blogs</a>
+      <a href="about.html">About</a>
+    </div>
+    <div>
+      <h4>Connect</h4>
+      <a href="https://instagram.com/mayblog_along" target="_blank">Instagram</a>
+      <a href="#">Twitter</a>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2026 mayBlog. All rights reserved.</div>
+</footer>
+
+<script type="module">
+import { db, doc, getDoc } from "./js/firebase.js";
+
+// ── Get post ID from URL (?id=abc123)
+const params = new URLSearchParams(window.location.search);
+const postId  = params.get("id");
+
+const wrap = document.getElementById("readerWrap");
+
+if (!postId) {
+  showError("No post ID found.", "Make sure you opened this page from the Blogs section.");
+} else {
+  loadPost(postId);
+}
+
+async function loadPost(id) {
+  try {
+    const snap = await getDoc(doc(db, "posts", id));
+
+    if (!snap.exists()) {
+      showError("Post not found.", "This post may have been deleted.");
+      return;
+    }
+
+    const p = snap.data();
+
+    // Update page title
+    document.title = (p.title || "Post") + " — mayBlog";
+
+    // Format date
+    const dateStr = p.createdAt
+      ? new Date(p.createdAt).toLocaleDateString("en-US", {
+          year: "numeric", month: "long", day: "numeric"
+        })
+      : "Unknown date";
+
+    // Reading time
+    const wordCount = (p.content || "").split(/\s+/).filter(Boolean).length;
+    const mins = Math.max(1, Math.ceil(wordCount / 200));
+
+    // Build tags HTML
+    const tagsHtml = p.tags
+      ? p.tags.split(/\s+/).filter(Boolean)
+          .map(t => `<span>${esc(t)}</span>`).join("")
+      : "";
+
+    // Render post
+    wrap.innerHTML = `
+      <a href="blogs.html" class="back-link">← Back to Blogs</a>
+
+      <p class="post-category">${esc(p.category || "General")}</p>
+
+      <h1 class="post-title">${esc(p.title || "Untitled")}</h1>
+
+      ${p.desc ? `<p class="post-desc">${esc(p.desc)}</p>` : ""}
+
+      <div class="post-meta">
+        <span>📅 ${dateStr}</span>
+        <span>⏱ ~${mins} min read</span>
+        <span>📂 ${esc(p.category || "General")}</span>
+      </div>
+
+      <hr class="divider">
+
+      <div class="post-body">${esc(p.content || "No content.")}</div>
+
+      ${tagsHtml ? `<div class="post-tags">${tagsHtml}</div>` : ""}
+    `;
+
+  } catch (err) {
+    console.error(err);
+    showError("Could not load post.", "Check your internet connection or Firestore rules.");
+  }
+}
+
+function showError(title, subtitle) {
+  wrap.innerHTML = `
+    <div class="state-box">
+      <h2>😕 ${title}</h2>
+      <p>${subtitle}</p>
+      <br>
+      <a href="blogs.html" style="color:#d4af37;text-decoration:none;font-size:14px;">← Go back to Blogs</a>
+    </div>
+  `;
+}
+
+function esc(str) {
+  return String(str || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,293 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>mayBlog</title>
+
+<link rel="stylesheet" href="css/common.css">
+<link rel="stylesheet" href="css/index.css">
+<link rel="icon" href="data:,">
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<header class="navbar">
+  <h2 class="logo">mayBlog</h2>
+
+  <nav class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="blogs.html">Blogs</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+</header>
+
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-overlay">
+    <p class="mini">LUXURY DIGITAL JOURNAL</p>
+
+    <h1>Words Worth <span>Lingering Over</span></h1>
+
+    <p class="hero-text">
+      A beautiful place for readers, writers, and thoughtful minds.
+      Discover stories, publish emotions, and create something timeless.
+    </p>
+
+    <div class="hero-btns">
+      <button onclick="openAuth()">Start Writing</button>
+      <a href="blogs.html" class="outline-btn">Explore Blogs</a>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- FEATURED ARTICLE -->
+<section class="featured-wrap">
+
+  <div class="featured-image">
+    <img src="https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1400">
+  </div>
+
+  <div class="featured-content">
+    <small>EDITOR'S PICK • APR 2026</small>
+
+    <h2>
+      <a href="slowliving.html">The Art of Slow Living</a>
+    </h2>
+
+    <p>
+      Discover how embracing slowness can transform your daily routine,
+      calm your mind, and help you reconnect with what truly matters.
+    </p>
+
+    <a href="slowliving.html" class="read-link">Read Article →</a>
+  </div>
+
+</section>
+
+<!-- PREMIUM GRID -->
+<section class="premium-grid">
+
+  <div class="left-showcase">
+    <small>CURATED STORIES</small>
+
+    <h2>Design. Thought. Emotion.</h2>
+
+    <p>
+      Inspired by Blogger elegance,<br>
+      crafted for modern readers who value beauty and depth.
+    </p>
+
+    <a href="blogs.html">Browse Collection</a>
+  </div>
+
+  <div class="right-cards">
+
+    <a href="mountains.html" class="mini-card">
+      <h3>Golden Hours in the Mountains</h3>
+      <p>Where silence speaks louder than noise.</p>
+    </a>
+
+    <a href="riverpiedra.html" class="mini-card">
+      <h3>By the River Piedra</h3>
+      <p>A quiet book that lingers in the soul.</p>
+    </a>
+
+    <a href="food.html" class="mini-card">
+      <h3>Farm to Table Cooking</h3>
+      <p>Freshness, warmth, and mindful meals.</p>
+    </a>
+
+    <a href="adhd.html" class="mini-card">
+      <h3>Understanding ADHD</h3>
+      <p>Self-awareness changes everything.</p>
+    </a>
+
+  </div>
+
+</section>
+
+<!-- NEW SECTION ABOVE FOOTER -->
+<section class="control-section">
+
+<div class="control-left">
+<p class="mini-title">CREATE • EXPRESS • PUBLISH</p>
+
+<h2>Your Story, Your Space</h2>
+
+<p>
+Write something timeless with elegant tools,
+AI assistance, drafts, privacy and beautiful publishing.
+</p>
+
+<button onclick="openAuth()">Start Writing</button>
+</div>
+
+<div class="control-grid">
+
+<div class="control-card">
+<h3>Thoughtfully Built</h3>
+<p>Elegant tools crafted for writers who value design and depth.</p>
+</div>
+
+<div class="control-card">
+<h3>Private Journal</h3>
+<p>Keep drafts, notes, and unfinished thoughts safely yours.</p>
+</div>
+
+<div class="control-card">
+<h3>AI Writing Tools</h3>
+<p>Generate titles, tags, summaries, and creative momentum.</p>
+</div>
+
+<div class="control-card">
+<h3>Elegant Publishing</h3>
+<p>Publish stories in layouts readers love to explore.</p>
+</div>
+
+</div>
+</section>
+
+
+<!-- QUOTE -->
+<section class="quote-section">
+  <h2>“Some words stay with us forever.”</h2>
+</section>
+
+
+<!-- FOOTER -->
+<footer class="footer">
+
+  <div class="footer-grid">
+
+    <div>
+      <h3>mayBlog</h3>
+      <p>A place where thoughts become stories.</p>
+    </div>
+
+    <div>
+      <h4>Navigate</h4>
+      <a href="index.html">Home</a>
+      <a href="blogs.html">Blogs</a>
+      <a href="about.html">About</a>
+    </div>
+
+    <div>
+      <h4>Connect</h4>
+      <a href="https://instagram.com/mayblog_along" target="_blank">Instagram</a>
+      <a href="https://twitter.com/mayblog" target="_blank">Twitter</a>
+    </div>
+
+  </div>
+
+  <div class="footer-bottom">
+    © 2026 mayBlog. All rights reserved.
+  </div>
+
+</footer>
+
+
+<!-- LOGIN POPUP -->
+<div id="authModal" class="auth-modal">
+  <div class="auth-box">
+    <span class="close-btn" onclick="closeAuth()">×</span>
+    <h2>Welcome to mayBlog</h2>
+    <p id="authMsg">Login or Sign up to start writing.</p>
+
+    <input type="email" id="authEmail" placeholder="Email">
+    <input type="password" id="authPassword" placeholder="Password">
+
+    <button id="authBtn" onclick="handleAuth()">Continue</button>
+    <p style="margin-top:12px;font-size:13px;opacity:0.6;">
+      No account? We'll create one automatically.
+    </p>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp, getApps, getApp }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {
+  getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCojXNcEUa56aPHl1EbY1mWaKQPZFKxxnM",
+  authDomain: "mayblog-9fe91.firebaseapp.com",
+  projectId: "mayblog-9fe91",
+  storageBucket: "mayblog-9fe91.appspot.com",
+  messagingSenderId: "582766247165",
+  appId: "1:582766247165:web:52ada5674baffafd5fd294"
+};
+
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+const auth = getAuth(app);
+
+function openAuth(){
+  document.getElementById("authModal").style.display="flex";
+}
+function closeAuth(){
+  document.getElementById("authModal").style.display="none";
+}
+
+window.openAuth = openAuth;
+window.closeAuth = closeAuth;
+
+window.handleAuth = async function() {
+  const email    = document.getElementById("authEmail").value.trim();
+  const password = document.getElementById("authPassword").value;
+  const msg      = document.getElementById("authMsg");
+  const btn      = document.getElementById("authBtn");
+
+  if (!email || !password) {
+    msg.textContent = "⚠️ Please enter your email and password.";
+    msg.style.color = "#e74c3c";
+    return;
+  }
+  if (password.length < 6) {
+    msg.textContent = "⚠️ Password must be at least 6 characters.";
+    msg.style.color = "#e74c3c";
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = "Checking...";
+  msg.style.color = "";
+
+  try {
+    // Try login first, if no account exists — create one
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch(e) {
+      if (e.code === "auth/user-not-found" || e.code === "auth/invalid-credential") {
+        await createUserWithEmailAndPassword(auth, email, password);
+      } else {
+        throw e;
+      }
+    }
+    // Success — redirect
+    window.location.href = "create.html";
+  } catch(e) {
+    let errorMsg = "Something went wrong. Try again.";
+    if (e.code === "auth/wrong-password")       errorMsg = "⚠️ Wrong password.";
+    if (e.code === "auth/invalid-email")        errorMsg = "⚠️ Invalid email address.";
+    if (e.code === "auth/too-many-requests")    errorMsg = "⚠️ Too many attempts. Try later.";
+    if (e.code === "auth/email-already-in-use") errorMsg = "⚠️ Account exists. Check your password.";
+    msg.textContent = errorMsg;
+    msg.style.color = "#e74c3c";
+    btn.disabled = false;
+    btn.textContent = "Continue";
+  }
+};
+</script>
+
+<script type="module" src="js/firebase.js"></script>
+
+</body>
+</html>
