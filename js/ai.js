@@ -2,7 +2,7 @@ async function generateSummary() {
 
   const text = document.getElementById("postInput").value;
 
-  const response = await fetch("http://localhost:3000/api/ai", {
+  const response = await fetch("https://mayblog.vercel.app/api/ai", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
