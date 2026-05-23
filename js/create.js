@@ -41,7 +41,7 @@ contentInput.addEventListener("input", () => {
 
 // ── AI HELPER ─────────────────────────────────────
 async function askClaude(prompt) {
-  const res = await fetch("http://localhost:3000/api/ai", {
+  const res = await fetch("https://mayblog.vercel.app/api/ai", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ prompt })
